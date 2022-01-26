@@ -8,12 +8,11 @@ import entities.Obstacle;
 import entities.Player;
 
 public class AStar {
-	//public static final int DIAGONAL_COST = 14;
 	public static final int V_H_COST = 10;
 
 	static class Cell{  
-		int heuristicCost = 0; //Heuristic cost
-		int finalCost = 0; //G+H
+		int heuristicCost = 0; 
+		int finalCost = 0; 
 		int i, j;
 		Cell parent; 
 
@@ -22,20 +21,18 @@ public class AStar {
 			this.j = j; 
 		}
 
-		@Override
 		public String toString(){
 			return "["+this.i+", "+this.j+"]";
 		}
 	}
 
-	//Blocked cells are just null Cell values in grid
 	static Cell [][] grid;
 
 	static PriorityQueue<Cell> open;
 
 	static boolean closed[][];
 	static int startI, startJ;
-	//static int endI, endJ;
+
 	static ArrayList<Point> endCells ;
 
 	public static void setBlocked(int i, int j){
@@ -47,9 +44,7 @@ public class AStar {
 		startJ = j;
 	}
 
-	public static void setEndCell(int i, int j){
-		//endI = i;
-		//endJ = j; 
+	public static void setEndCell(int i, int j){ 
 		endCells.add(new Point(i, j));
 	}
 
@@ -67,7 +62,6 @@ public class AStar {
 
 	public static void AStar(){ 
 
-		//add the start location to open list.
 		open.add(grid[startJ][startI]);
 
 		Cell current;
@@ -103,6 +97,7 @@ public class AStar {
 			}
 		} 
 	}
+	
 	static Point startingPoint;
 	/*
     Params :
@@ -113,7 +108,6 @@ public class AStar {
     int[][] blocked = array containing inaccessible cell coordinates
 	 */
 	public static boolean test(Object [][] gridIn, ArrayList<Enemy> enemies, Player player){
-		//Reset
 		endCells = new ArrayList<Point>();
 		grid = new Cell[gridIn.length + 2][gridIn[0].length + 2];
 		closed = new boolean[gridIn.length + 2][gridIn[0].length + 2];
@@ -129,11 +123,11 @@ public class AStar {
 			 Point p = enemy.getCoordinates();
 			setEndCell(p.y + 1, p.x + 1);
 		}
+		
 		Point p = player.getCoordinates();
 		setStartCell(p.y + 1, p.x + 1);
 		startingPoint = new Point(p.x + 1, p.y + 1);
 		
-
 		for(int i=0;i<gridIn[0].length + 2;++i){
 			for(int j=0;j<gridIn.length + 2;++j){
 				Point closestPoint = findClosestEndPoint(i, j);
@@ -141,20 +135,21 @@ public class AStar {
 				int endJ = closestPoint.y;
 				grid[i][j] = new Cell(i, j);
 				grid[i][j].heuristicCost = Math.abs(i-endI)+Math.abs(j-endJ);
-				//                  System.out.print(grid[i][j].heuristicCost+" ");
 			}
-			//              System.out.println();
 		}
+		
 		grid[startingPoint.x][startingPoint.y].finalCost = 0;
 
 		for (int y = 0; y < grid.length; y++) {
 			grid[y][0] = null;
 			grid[y][grid[0].length - 1] = null;
 		}
+
 		for (int x = 0; x < grid[0].length; x++) {
 			grid[0][x] = null;
 			grid[grid.length - 1][x] = null;
 		}
+		
 		for (int y = 0; y < gridIn.length; y++) {
 			for (int x = 0; x < gridIn[0].length; x++) {
 				if (gridIn[y][x] instanceof Enemy) {
@@ -168,45 +163,18 @@ public class AStar {
 				}
 			}
 		}
-		//Display initial map
-		//System.out.println("Grid: ");
-		//for(int i=0;i<gridIn[0].length + 2;++i){
-			//for(int j=0;j<gridIn.length + 2;++j){
-			//	if(i==startingPoint.y&&j==startingPoint.x)System.out.print("SO  "); //Source
-			//	else if(isEndPoint(i, j))System.out.print("DE  ");  //Destination
-			//	else if(grid[i][j]!=null)System.out.printf("%-3d ", 0);
-			//	else System.out.print("BL  "); 
-		//	}
-		//	System.out.println();
-		//} 
-		//System.out.println();
 
 		AStar(); 
-		/*
-		System.out.println("\nScores for cells: ");
-		for(int i=0;i<gridIn[0].length + 2;++i){
-			for(int j=0;j<gridIn.length + 2;++j){
-				if(grid[i][j]!=null)System.out.printf("%-3d ", grid[i][j].finalCost);
-				else {}//System.out.print("BL  ");
-			}
-			//System.out.println();
-		}
-		*/
-		//System.out.println();
+		
 		Point endPointFound = endPointMet();
-		if(endPointFound != null){
-			//Trace back the path 
-			//System.out.println("Path: ");
+		if (endPointFound != null){
 			Cell current = grid[endPointFound.x][endPointFound.y];
-			//System.out.print(current);
+			
 			while(current.parent!=null){
-				//System.out.print(" -> "+current.parent);
 				current = current.parent;
 			} 
-			//System.out.println();
 			return true;
-		}else {
-			//System.out.println("No possible path");
+		} else {
 			return false;
 		}
 	}
@@ -228,6 +196,7 @@ public class AStar {
 		}
 		return null;
 	}
+	
 	public static Point findClosestEndPoint(int i, int j) {
 		Point currentPoint = new Point(i, j);
 		Point closestPoint = null;

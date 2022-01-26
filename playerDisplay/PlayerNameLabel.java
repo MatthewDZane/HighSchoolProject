@@ -4,8 +4,6 @@ import javax.swing.JLabel;
 
 import game.Game1;
 
-//import entities.Player;
-
 public class PlayerNameLabel extends JLabel {
 		private Game1 game;
 		

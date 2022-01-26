@@ -1,13 +1,14 @@
 package display;
 
-import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 
 import game.Game1;
@@ -28,6 +29,8 @@ public class Displayer extends JFrame {
 	private PlayerDisplayer playerDisplayer;
 	private LevelDisplay levelDisplay;
 	private PlayerHealthGraphicDisplay playerHealthGraphicDisplay;
+	private JButton pausePlayButton;
+	private JButton retryButton;
 
 	private int frameHeight;
 	private int frameWidth;
@@ -36,31 +39,29 @@ public class Displayer extends JFrame {
 	private KeyEventHandler keyEventHandler = new KeyEventHandler();
 	private AttackListener attackListener = new AttackListener(this);
 	private InstructionDisplayer instructionDisplayer;
-	
+
 	private Game1ActionListener enemyHitHandler;
 	private Game1ActionListener enemyKilledtHandler;
 	private Game1ActionListener damageTakenHandler;
 	private Game1ActionListener healedHandler;
 	private Game1ActionListener attackUpHandler;
 	private Game1ActionListener levelUpHandler;
-	
-	
+
 	public GridDisplayer getGridDisplayer() { return gridDisplayer; }
 	public LevelDisplay getLevelDisplay() { return levelDisplay; }
 
 	public Game1 getGame() { return game; }
-	
+
 	public int getFrameHeight() { return frameHeight; }
 	public int getFrameWidth() { return frameWidth; }
 
 	public Displayer(int height, int width) {
-		super("Game 1");
+		super();
 
 		setLayout(null);
-		
+
 		frameHeight = height;
 		frameWidth = width;
-
 
 		enemyHitHandler = new Game1ActionHandler(GameStatusLabel.ENEMY_HIT);
 		enemyKilledtHandler = new Game1ActionHandler(GameStatusLabel.ENEMY_KILLED);
@@ -68,10 +69,16 @@ public class Displayer extends JFrame {
 		healedHandler = new Game1ActionHandler(GameStatusLabel.HEALED);
 		attackUpHandler = new Game1ActionHandler(GameStatusLabel.ATTACK_UP);
 		levelUpHandler = new Game1ActionHandler(GameStatusLabel.LEVEL_UP);
-		
+
 		game = new Game1(enemyHitHandler, enemyKilledtHandler, 
 				damageTakenHandler, healedHandler, attackUpHandler, levelUpHandler);
-
+		
+		pausePlayButton = new JButton("Pause");
+		pausePlayButton.addActionListener(new PausePlayButtonListener(this));
+		
+		pausePlayButton.setBounds((int)(0.28 * frameWidth), (int)(0.01 * frameHeight), (int)(0.10 * frameWidth), (int)(0.05 * frameHeight));
+		add(pausePlayButton);
+		
 		addComponentListener(componentListener);
 		addKeyListener(keyEventHandler);
 
@@ -80,29 +87,97 @@ public class Displayer extends JFrame {
 		levelDisplay = new LevelDisplay(game, frameWidth, frameHeight);
 		playerHealthGraphicDisplay = new PlayerHealthGraphicDisplay(game, frameWidth, frameHeight);
 		instructionDisplayer = new InstructionDisplayer(frameWidth, frameHeight);
-		
+
 		add(levelDisplay);
 		add(playerDisplayer);
 		add(gridDisplayer);
 		add(playerHealthGraphicDisplay);
 		add(instructionDisplayer);
-		
+
 		game.setAttackListener(attackListener);
 		
 		setSize(frameWidth, frameHeight);
 		setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		requestFocus();
 	}
 
 	public void endGame() {
-		disableKeys();
+		remove(pausePlayButton);
+		Game1.setIsPaused(true);
 		levelDisplay.endGame();
-		
+		addRetryButton();
 	}
 
+	public void addRetryButton() {
+		retryButton = new JButton("Retry");
+		retryButton.setBounds((int)(0.45 * frameWidth), (int)(0.01 * frameHeight), (int)(0.10 * frameWidth), (int)(0.05 * frameHeight));
+		retryButton.addActionListener(new RetryButtonListener(this));
+		add(retryButton);
+	}
+	
+	public class RetryButtonListener implements ActionListener {
+		
+		Displayer display;
+		
+		public RetryButtonListener(Displayer displayIn) {
+			display = displayIn;
+		}
+		
+		public void actionPerformed(ActionEvent arg0) {
+
+			display.remove(retryButton);
+
+			game = new Game1(enemyHitHandler, enemyKilledtHandler, 
+					damageTakenHandler, healedHandler, attackUpHandler, levelUpHandler);
+
+			remove(levelDisplay);
+			remove(playerDisplayer);
+			remove(gridDisplayer);
+			remove(playerHealthGraphicDisplay);
+			remove(instructionDisplayer);
+
+			gridDisplayer = new GridDisplayer(game, frameWidth, frameHeight);
+			playerDisplayer = new PlayerDisplayer(game, frameWidth, frameHeight);
+			levelDisplay = new LevelDisplay(game, frameWidth, frameHeight);
+			playerHealthGraphicDisplay = new PlayerHealthGraphicDisplay(game, frameWidth, frameHeight);
+			instructionDisplayer = new InstructionDisplayer(frameWidth, frameHeight);
+
+			add(levelDisplay);
+			add(playerDisplayer);
+			add(gridDisplayer);
+			add(playerHealthGraphicDisplay);
+			add(instructionDisplayer);
+
+			Game1.setRestarted(true);	
+		}
+	}
+	
+	public class PausePlayButtonListener implements ActionListener {
+		
+		Displayer display;
+		
+		public PausePlayButtonListener(Displayer displayIn) {
+			display = displayIn;
+		}
+		
+		public void actionPerformed(ActionEvent arg0) {
+			if (Game1.getIsPaused()) {
+				Game1.setIsPaused(false);
+				pausePlayButton.setText("Pause");
+				requestFocus();
+			}
+			else {
+				Game1.setIsPaused(true);
+				pausePlayButton.setText("Play");
+			}
+		}
+
+	}
+	
 	public void paint(Graphics g) { 
 		super.paint(g);
-
+		componentListener.componentResized(null);
 		levelDisplay.repaint();
 		playerHealthGraphicDisplay.repaint();
 	}
@@ -114,28 +189,20 @@ public class Displayer extends JFrame {
 		public Game1ActionHandler(String messageIn) {
 			message = messageIn;
 		}
-		
+
 		@Override
 		public void actionPreformed() {
 			levelDisplay.displayMessage(message);
 		}
 
 	}
+	
 	public class ComponentHandler implements ComponentListener {
 
+		public void componentHidden(ComponentEvent arg0) {}
 
-		public void componentHidden(ComponentEvent arg0) {
-			// TODO Auto-generated method stub
+		public void componentMoved(ComponentEvent arg0) {}
 
-		}
-
-		@Override
-		public void componentMoved(ComponentEvent arg0) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
 		public void componentResized(ComponentEvent evt) {
 
 			frameHeight = getHeight();
@@ -157,33 +224,18 @@ public class Displayer extends JFrame {
 				instructionDisplayer.setFrameHeight(frameHeight);
 				instructionDisplayer.setFrameWidth(frameWidth);
 				instructionDisplayer.resize();
+				pausePlayButton.setBounds((int)(0.28 * frameWidth), (int)(0.01 * frameHeight), (int)(0.10 * frameWidth), (int)(0.05 * frameHeight));
 			} catch (NullPointerException e) {}
 		}
 
-		@Override
-		public void componentShown(ComponentEvent arg0) {
-			// TODO Auto-generated method stub
-
-		}
+		public void componentShown(ComponentEvent arg0) {}
 	}
-	public void disableKeys() {
-		removeKeyListener(keyEventHandler);
-	}
-	public void enableKeys() {
-		addKeyListener(keyEventHandler);
-	}
+	
 	public class KeyEventHandler implements KeyListener {
 
-		@Override
 		public void keyPressed(KeyEvent evt) {
-
-		}
-
-		@Override
-		public void keyReleased(KeyEvent evt) {
-			Grid grid = game.getGrid();
-			if (!game.getHasMoved()) {
-				disableKeys();
+			if(!Game1.getIsPaused()) {
+				Grid grid = game.getGrid();
 				int keyCode = evt.getKeyCode();
 				Direction moveDirection = Direction.INVALID;
 				switch( keyCode ) { 
@@ -201,10 +253,8 @@ public class Displayer extends JFrame {
 					break;
 
 				}
-				if (grid.movePlayer(moveDirection)) {
-					game.setHasMoved(true);
-				}
-				else {
+
+				if (!grid.movePlayer(moveDirection)) {
 					Direction arrowDirection = Direction.INVALID;
 					switch ( keyCode) {
 					case KeyEvent.VK_W : 
@@ -220,25 +270,16 @@ public class Displayer extends JFrame {
 						arrowDirection = Direction.RIGHT;
 						break;
 					}
-					if (grid.playerShootArrow(arrowDirection)) {
-						game.setHasMoved(true);
-					}
-					else {
-						enableKeys();
-					}
+
+					grid.playerShootArrow(arrowDirection);
 				}
 
 				repaint();
 			}
 		}
 
-		@Override
-		public void keyTyped(KeyEvent evt) {
-			// TODO Auto-generated method stub
+		public void keyReleased(KeyEvent evt) {}
 
-		}
-
+		public void keyTyped(KeyEvent evt) {}
 	}
-
-
 }

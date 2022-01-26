@@ -21,21 +21,18 @@ public class AttackDisplay extends JPanel{
 	public AttackDisplay(Direction direction) {
 		try {
 			attackTexture = ImageIO.read(new File("./pictures/attack" + direction + ".png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} catch (IOException e) {}
+		
 		setOpaque(false);
 	}
+	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		
 		g.drawImage(attackTexture, 0, 0, getWidth(), getHeight(), null);
+		
 		Graphics2D g2d = (Graphics2D) g;
-        g2d.setRenderingHint(
-            RenderingHints.KEY_ANTIALIASING,
-            RenderingHints.VALUE_ANTIALIAS_ON);
-        g2d.setComposite(AlphaComposite.getInstance(
-            AlphaComposite.SRC_OVER, 0.3f));
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f));
 	}
-	
 }

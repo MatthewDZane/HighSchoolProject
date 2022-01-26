@@ -18,6 +18,7 @@ import entities.MovingEnemy;
 import entities.Obstacle;
 import entities.PickUp;
 import entities.Projectile;
+import entities.ShootingEnemy;
 import game.Game1;
 import game.Grid;
 import helpers.AttackListener;
@@ -43,13 +44,18 @@ public class GridDisplayer extends JPanel{
 	public BufferedImage obstacleTexture = null;
 	public BufferedImage enemyTexture = null;
 	public BufferedImage movingEnemyTexture = null;
+	public BufferedImage shootingEnemyTexture = null;
 	public BufferedImage backGroundTexture = null;
 	public BufferedImage playerTexture = null;
 	public BufferedImage healthPackTexture = null;
-	public BufferedImage arrowUpTexture = null;
-	public BufferedImage arrowDownTexture = null;
-	public BufferedImage arrowLeftTexture = null;
-	public BufferedImage arrowRightTexture = null;
+	public BufferedImage playerArrowUpTexture = null;
+	public BufferedImage playerArrowDownTexture = null;
+	public BufferedImage playerArrowLeftTexture = null;
+	public BufferedImage playerArrowRightTexture = null;
+	public BufferedImage enemyArrowUpTexture = null;
+	public BufferedImage enemyArrowDownTexture = null;
+	public BufferedImage enemyArrowLeftTexture = null;
+	public BufferedImage enemyArrowRightTexture = null;
 
 	public void setFrameHeight(int frameHeightIn) { frameHeight = frameHeightIn; }
 	public void setFrameWidth(int frameWidthIn) { frameWidth = frameWidthIn; }
@@ -86,17 +92,19 @@ public class GridDisplayer extends JPanel{
 			obstacleTexture = ImageIO.read(new File("./pictures/obstacle.png"));
 			enemyTexture = ImageIO.read(new File("./pictures/enemy.png"));
 			movingEnemyTexture = ImageIO.read(new File("./pictures/movingEnemy.png"));
+			shootingEnemyTexture = ImageIO.read(new File("./pictures/shootingEnemy.png"));
 			backGroundTexture = ImageIO.read(new File("./pictures/dirt.png"));
 			playerTexture = ImageIO.read(new File("./pictures/player.png"));
 			healthPackTexture = ImageIO.read(new File("./pictures/healthPack.png"));
-			arrowUpTexture = ImageIO.read(new File("./pictures/arrowUp.png"));
-			arrowDownTexture = ImageIO.read(new File("./pictures/arrowDown.png"));;
-			arrowLeftTexture = ImageIO.read(new File("./pictures/arrowLeft.png"));;
-			arrowRightTexture = ImageIO.read(new File("./pictures/arrowRight.png"));;
-		} catch (IOException e) {
-
-			System.out.println("Picture files not found");
-		}
+			playerArrowUpTexture = ImageIO.read(new File("./pictures/playerArrowUp.png"));
+			playerArrowDownTexture = ImageIO.read(new File("./pictures/playerArrowDown.png"));
+			playerArrowLeftTexture = ImageIO.read(new File("./pictures/playerArrowLeft.png"));
+			playerArrowRightTexture = ImageIO.read(new File("./pictures/playerArrowRight.png"));
+			enemyArrowUpTexture = ImageIO.read(new File("./pictures/enemyArrowUp.png"));
+			enemyArrowDownTexture = ImageIO.read(new File("./pictures/enemyArrowDown.png"));
+			enemyArrowLeftTexture = ImageIO.read(new File("./pictures/enemyArrowLeft.png"));
+			enemyArrowRightTexture = ImageIO.read(new File("./pictures/enemyArrowRight.png"));
+		} catch (IOException e) {}
 	}
 
 	public void paintComponent(Graphics g) {
@@ -110,10 +118,7 @@ public class GridDisplayer extends JPanel{
 				g.drawImage(backGroundTexture, gridRect.x, gridRect.y, gridRect.width + GRID_LINE_WIDTH, gridRect.height + GRID_LINE_WIDTH, null);
 			}
 		}
-		//g.drawImage(backGroundTexture, 0, 0, width + GRID_LINE_WIDTH, height + GRID_LINE_WIDTH, null);
-		g.drawRect(0, 0, width + 1 , height + 1);
-
-
+		
 		List<Obstacle> obstacles = grid.getObstacles();
 		int numObstacles = obstacles.size();
 
@@ -123,10 +128,9 @@ public class GridDisplayer extends JPanel{
 					obstacleRect.height + GRID_LINE_WIDTH, null);
 		}
 
-
-
 		List <PickUp> pickUps = grid.getPickUps();
 		int numPickUps = pickUps.size();
+		
 		for (int i = 0; i < numPickUps; i++) {
 			if (pickUps.get(i) instanceof HealthPack) {
 				Rectangle healthPackRect = getRect(pickUps.get(i).getCoordinates());
@@ -134,41 +138,64 @@ public class GridDisplayer extends JPanel{
 			}
 		}
 
-		List <Projectile> projectiles = grid.getProjectiles();
-		int numProjectiles = projectiles.size();
-		for (int i = 0; i < numProjectiles; i++) {
-			Rectangle projectileRect = getRect(projectiles.get(i).getCoordinates());
-			switch (projectiles.get(i).getDirection()) {
+		List <Projectile> playerProjectiles = grid.getPlayerProjectiles();
+		int numPlayerProjectiles = playerProjectiles.size();
+		
+		for (int i = 0; i < numPlayerProjectiles; i++) {
+			Rectangle projectileRect = getRect(playerProjectiles.get(i).getCoordinates());
+			switch (playerProjectiles.get(i).getDirection()) {
 			case UP: 
-				g.drawImage(arrowUpTexture, projectileRect.x, projectileRect.y, projectileRect.width, projectileRect.height, null) ;
+				g.drawImage(playerArrowUpTexture, projectileRect.x, projectileRect.y, projectileRect.width, projectileRect.height, null) ;
 				break;
 			case DOWN: 
-				g.drawImage(arrowDownTexture, projectileRect.x, projectileRect.y, projectileRect.width, projectileRect.height, null) ;
+				g.drawImage(playerArrowDownTexture, projectileRect.x, projectileRect.y, projectileRect.width, projectileRect.height, null) ;
 				break;
 			case LEFT:
-				g.drawImage(arrowLeftTexture, projectileRect.x, projectileRect.y, projectileRect.width, projectileRect.height, null) ;
+				g.drawImage(playerArrowLeftTexture, projectileRect.x, projectileRect.y, projectileRect.width, projectileRect.height, null) ;
 				break;
 			case RIGHT: 
-				g.drawImage(arrowRightTexture, projectileRect.x, projectileRect.y, projectileRect.width, projectileRect.height, null) ;
+				g.drawImage(playerArrowRightTexture, projectileRect.x, projectileRect.y, projectileRect.width, projectileRect.height, null) ;
 				break;
 			}
 		}
-		List <Enemy> enemies = grid.getEnemies();
-		int numEnemies = enemies.size();
-		for (int i = 0; i < numEnemies; i++) {
-			if (enemies.get(i) instanceof MovingEnemy ) {
-				Rectangle enemyRect = getRect(enemies.get(i).getCoordinates());
-				g.drawImage(movingEnemyTexture, enemyRect.x, enemyRect.y, enemyRect.width, enemyRect.height, null);
-			}
-			else {
-				Rectangle enemyRect = getRect(enemies.get(i).getCoordinates());
-				g.drawImage(enemyTexture, enemyRect.x, enemyRect.y, enemyRect.width, enemyRect.height, null);
+		
+		List <Projectile> enemyProjectiles = grid.getEnemyProjectiles();
+		int numEnemyProjectiles = enemyProjectiles.size();
+		
+		for (int i = 0; i < numEnemyProjectiles; i++) {
+			Rectangle projectileRect = getRect(enemyProjectiles.get(i).getCoordinates());
+			switch (enemyProjectiles.get(i).getDirection()) {
+			case UP: 
+				g.drawImage(enemyArrowUpTexture, projectileRect.x, projectileRect.y, projectileRect.width, projectileRect.height, null) ;
+				break;
+			case DOWN: 
+				g.drawImage(enemyArrowDownTexture, projectileRect.x, projectileRect.y, projectileRect.width, projectileRect.height, null) ;
+				break;
+			case LEFT:
+				g.drawImage(enemyArrowLeftTexture, projectileRect.x, projectileRect.y, projectileRect.width, projectileRect.height, null) ;
+				break;
+			case RIGHT: 
+				g.drawImage(enemyArrowRightTexture, projectileRect.x, projectileRect.y, projectileRect.width, projectileRect.height, null) ;
+				break;
+			case INVALID:
+				System.out.println("not working");
 			}
 		}
-		List<MovingEnemy> movingEnemies = grid.getMovingEnemies();
-		int numMovingEnemies = movingEnemies.size();
-		for (int i = 0; i < numMovingEnemies; i++) {
-			//paint moving enemy design
+		
+		List <Enemy> enemies = grid.getEnemies();
+		int numEnemies = enemies.size();
+		
+		for (int i = 0; i < numEnemies; i++) {
+			Rectangle enemyRect = getRect(enemies.get(i).getCoordinates());
+			if (enemies.get(i) instanceof MovingEnemy ) {
+				g.drawImage(movingEnemyTexture, enemyRect.x, enemyRect.y, enemyRect.width, enemyRect.height, null);
+			}
+			else if (enemies.get(i) instanceof ShootingEnemy) {
+				g.drawImage(shootingEnemyTexture, enemyRect.x, enemyRect.y, enemyRect.width, enemyRect.height, null);
+			}
+			else {
+				g.drawImage(enemyTexture, enemyRect.x, enemyRect.y, enemyRect.width, enemyRect.height, null);
+			}
 		}
 
 		if (!game.getGrid().getPlayer().isDead()) {
@@ -178,7 +205,6 @@ public class GridDisplayer extends JPanel{
 	}
 
 	public void resizeGrid() {
-
 		distanceFromTopMargin = (int) Math.round(TOP_MARGIN_PERCENT_OF_FRAME * frameHeight);
 		distanceFromBottomMargin = (int) Math.round(BOTTOM_MARGIN_PERCENT_OF_FRAME * frameHeight);
 		distanceFromSideMargins = (int) Math.round(SIDE_MARGINS_PERCENT_OF_FRAME * frameWidth);
@@ -192,11 +218,12 @@ public class GridDisplayer extends JPanel{
 	public Rectangle getRect(Point p) {
 		int y = (int) p.getY();
 		int x = (int) p.getX();
+		
 		int yCord1 = height * y / game.getGrid().getObstacleGrid().length;
 		int xCord1 = width * x / game.getGrid().getObstacleGrid()[0].length;
 		int yCord2 = height * (y + 1) / game.getGrid().getObstacleGrid().length;
 		int xCord2 = width * (x + 1) / game.getGrid().getObstacleGrid()[0].length;
+		
 		return new Rectangle(xCord1, yCord1, xCord2 - xCord1, yCord2 - yCord1);
 	}
-	
 }

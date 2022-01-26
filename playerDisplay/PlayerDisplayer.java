@@ -9,7 +9,6 @@ import javax.swing.JPanel;
 import game.Game1;
 
 public class PlayerDisplayer extends JPanel {
-	private Game1 game;
 
 	private int frameHeight;
 	private int frameWidth;
@@ -47,8 +46,6 @@ public class PlayerDisplayer extends JPanel {
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 		setBackground(Color.white);
 		setBorder(BorderFactory.createRaisedBevelBorder());
-		
-		game = gameIn;
 
 		frameWidth = frameWidthIn;
 		frameHeight = frameHeightIn;

@@ -13,7 +13,6 @@ public class HealthPack extends PickUp {
 	
 	public void usePower(Player player) {
 		player.heal(healthValue);
-		
 	}
 	
 }

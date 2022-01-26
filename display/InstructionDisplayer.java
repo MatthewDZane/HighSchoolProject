@@ -1,18 +1,10 @@
 package display;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
-import javax.swing.SpringLayout;
-import javax.swing.Timer;
-
-import game.Game1;
 
 public class InstructionDisplayer  extends JPanel{
 
@@ -32,8 +24,8 @@ public class InstructionDisplayer  extends JPanel{
 	public static final double LEFT_MARGIN_PERCENT_OF_FRAME = 0.63;
 	public static final double RIGHT_MARGIN_PERCENT_OF_FRAME = 0.05;
 	
-	MoveInstructions move = new MoveInstructions();
-	ShootInstructions shoot = new ShootInstructions();
+	private MoveInstructions move = new MoveInstructions();
+	private ShootInstructions shoot = new ShootInstructions();
 
 	public void setFrameHeight(int frameHeightIn) { frameHeight = frameHeightIn; }
 	public void setFrameWidth(int frameWidthIn) { frameWidth = frameWidthIn; }
@@ -48,7 +40,7 @@ public class InstructionDisplayer  extends JPanel{
 
 	public InstructionDisplayer(int frameWidthIn, int frameHeightIn) {
 		super();
-		//setLayout(new SpringLayout());
+		
 		setBorder(BorderFactory.createLineBorder(Color.black));
 		setBackground(Color.WHITE);
 
@@ -70,7 +62,6 @@ public class InstructionDisplayer  extends JPanel{
 		move.setBounds(width / 2 + 1, 0, width / 2, height);
 		
 		setBounds(distanceFromLeftMargin, distanceFromTopMargin, width, height);
-
 	}
 
 	public void paintComponent(Graphics g) {
@@ -90,7 +81,6 @@ public class InstructionDisplayer  extends JPanel{
 
 		shoot.setBounds(0,  0, width / 2, height);
 		move.setBounds(width / 2 + 1, 0, width / 2, height);
-		
 		
 		setBounds(distanceFromLeftMargin, distanceFromTopMargin, width, height);
 	}

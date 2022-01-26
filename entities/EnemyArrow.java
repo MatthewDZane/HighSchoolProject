@@ -4,16 +4,16 @@ import java.awt.Point;
 
 import helpers.Direction;
 
-public class Arrow extends Projectile{
+public class EnemyArrow extends Projectile{
 
-	public Arrow(int x, int y, int speedIn, int damageIn, int knockbackIn, Direction directionIn) {
+	public EnemyArrow(int x, int y, int speedIn, int damageIn, int knockbackIn, Direction directionIn) {
 		speed = speedIn;
 		damage = damageIn;
 		knockback = knockbackIn;
 		direction = directionIn;
 		coordinates = new Point(x, y);
 	}
-
+	
 	public boolean useAbility(Object target) {
 		return false;
 	}

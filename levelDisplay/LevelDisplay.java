@@ -50,7 +50,6 @@ public class LevelDisplay  extends JPanel{
 	public int getDistanceFromBottonMargin() { return distanceFromBottomMargin; }
 	public int getDistanceFromLeftMargins() { return distanceFromLeftMargin; }
 
-
 	public LevelDisplay(Game1 gameIn, int frameWidthIn, int frameHeightIn) {
 		super();
 
@@ -77,18 +76,16 @@ public class LevelDisplay  extends JPanel{
 		gameStatusLabel = new GameStatusLabel();
 		levelLabel = new LevelLabel(game);
 
-
 		add(levelLabel, BorderLayout.PAGE_START);
 		add(gameStatusLabel, BorderLayout.CENTER);
 	}
 
 
 	public void endGame() {
-		//remove(gameStatusLabel);
-		//gameStatusLabel = new GameStatusLabel();
-		//add(gameStatusLabel);
 		gameStatusLabel.setText(GameStatusLabel.GAME_OVER);
+		try {
 		t.stop();
+		} catch (NullPointerException e) {}
 		gameStatusLabel.setVisible(true);
 		repaint();
 	}
@@ -113,7 +110,6 @@ public class LevelDisplay  extends JPanel{
 	}
 
 	public void displayMessage(String message) {
-		
 		gameStatusLabel.setText(message);
 		gameStatusLabel.setVisible(true);
 		t = new Timer(1000, new TimerListener(this));
@@ -121,8 +117,8 @@ public class LevelDisplay  extends JPanel{
 		t.start();
 	}
 
-	class TimerListener implements ActionListener
-	{
+	class TimerListener implements ActionListener {
+		
 		int y = 0;
 		LevelDisplay display;
 		
@@ -132,7 +128,7 @@ public class LevelDisplay  extends JPanel{
 		
 		public void actionPerformed(ActionEvent arg0) {
 			y++;
-			if (y > 1 && display.getGame().getIsDone() && y < 4) {
+			if (y > 1 && Game1.getIsDone() && y < 4) {
 				t = (Timer) arg0.getSource();
 				t.stop();
 				display.getGameStatusLabel().setVisible(false);

@@ -16,6 +16,7 @@ public abstract class Projectile {
 	public int getKnockback() { return knockback; }
 	public Point getCoordinates() { return coordinates; }
 	public Direction getDirection() { return direction; }
+	
 	/**
 	 * Returns whether or not the target was killed are destroyed
 	 * @param target
@@ -38,6 +39,7 @@ public abstract class Projectile {
 			return useAbility(target);
 		}
 	}
+	
 	/**
 	 * returns whether or not ability was used successfully
 	 * @param target

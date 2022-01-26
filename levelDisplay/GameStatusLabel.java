@@ -30,6 +30,4 @@ public class GameStatusLabel extends JLabel {
 	public void setVisible(boolean f) {
 		super.setVisible(f);
 	}
-	
-
 }

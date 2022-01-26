@@ -1,13 +1,11 @@
 package display;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 
 public class ShootInstructions extends JPanel{
@@ -19,10 +17,7 @@ public class ShootInstructions extends JPanel{
 		
 		try {
 			shootInstructions = ImageIO.read(new File("./pictures/shootingInstructions.png"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} catch (IOException e) {}
 	}
 	
 	public void paint(Graphics g) {

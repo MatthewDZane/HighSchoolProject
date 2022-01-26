@@ -32,18 +32,20 @@ public class AttackListener {
 	public Rectangle getRect(Point p) {
 		GridDisplayer gridDisplayer = panel.getGridDisplayer();
 		Rectangle rect  = gridDisplayer.getRect(p);
+		
 		rect.width  = (int) Math.round(panel.getFrameWidth() * (1 -  (2 * GridDisplayer.SIDE_MARGINS_PERCENT_OF_FRAME)) 
 				* rect.width / gridDisplayer.getGridWidth());
 		rect.height = (int) Math.round(panel.getFrameHeight() * rect.height * 
 				(1 - GridDisplayer.BOTTOM_MARGIN_PERCENT_OF_FRAME - GridDisplayer.TOP_MARGIN_PERCENT_OF_FRAME) 
 				/ gridDisplayer.getGridHeight());
+		
 		rect.x = rect.width * p.x + gridDisplayer.getDistanceFromSideMargins();
 		rect.y = rect.height * p.y + gridDisplayer.getDistanceFromTopMargin();
+		
 		return rect;
 	}
 	
 	public class TimerListener implements ActionListener{
-
 		int y = 0;
 		AttackDisplay display;
 		Displayer panel;
